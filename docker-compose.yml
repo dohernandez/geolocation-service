@@ -1,0 +1,25 @@
+version: '3'
+services:
+  servid:
+    build:
+      context: .
+      dockerfile: resources/images/Dockerfile.dev
+    env_file:
+      - .env
+    ports:
+      - "${SERVICE_HOST_PORT}:8000"
+    volumes:
+      - .:/go/src/github.com/dohernandez/geolocation-service
+      - /tmp/go-build:/root/.cache/go-build
+    depends_on:
+    - postgres
+
+  postgres:
+    image: postgres:11.2
+    ports:
+    - '${POSTGRES_HOST_PORT}:5432'
+    environment:
+      LC_ALL: C.UTF-8
+      POSTGRES_DB: form3-service
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password

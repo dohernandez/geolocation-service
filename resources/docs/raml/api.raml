@@ -1,0 +1,55 @@
+#%RAML 1.0
+title: Geolocation Service
+description: The geolocation-service is a service responsible for displaying geolocation data.
+version: v1
+protocols:
+  - HTTP
+  - HTTPS
+baseUri: /
+mediaType:
+  - application/json
+
+types:
+  ErrResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        error:
+          type: string
+        status:
+          type: string
+  VersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+        revision:
+          type: string
+        branch:
+          type: string
+        build_user:
+          type: string
+        build_date:
+          type: string
+        go_version:
+          type: string
+
+/version:
+  get:
+      description: Display API server version
+      responses:
+        '200':
+          description: OK
+          body:
+            application/json:
+              type: VersionResponse
+              example:
+                version: v1.0
+                revision: 52da34e2afa432cebca21adb755a827cb990c1ce
+                branch: master
+                build_user: dohernandez
+                build_date: 2019-02-25T17:33:16UTC
+                go_version: go1.11.4
+
