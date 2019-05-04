@@ -13,7 +13,7 @@ RUN  curl -sL https://github.com/golang-migrate/migrate/releases/download/v4.2.4
 
 COPY . .
 
-RUN make build
+RUN make deps-vendor build
 
 # --- Generating api documentation
 
