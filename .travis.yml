@@ -15,7 +15,7 @@ env:
   - GITHUB_OWNER=$(echo ${TRAVIS_REPO_SLUG} | cut -d"/" -f1)
   - GITHUB_REPO=$(echo ${TRAVIS_REPO_SLUG} | cut -d"/" -f2)
   - BINARY_NAME=${GITHUB_REPO}
-  - VERSION=$(eval ./resources/scripts/ci-version.sh)
+  - VERSION=$(eval ./ci/version.sh)
 
 stages:
 - "Code Style"
@@ -26,15 +26,15 @@ jobs:
   include:
   - stage: "Code Style"
     install: skip
-    script: resources/scripts/ci-code-style.sh
+    script: ci/code-style.sh
     if: branch = master || type = pull_request
 
   - stage: "Unit Tests"
     install: skip
-    script: resources/scripts/ci-unit-tests.sh
+    script: ci/unit-tests.sh
     if: branch = master || type = pull_request
 
   - stage: "Promote Docker Image"
-    install: resources/scripts/ci-bump-version.sh
-    script: resources/scripts/ci-promote-docker-image.sh
+    install: ci/bump-version.sh
+    script: ci/promote-docker-image.sh
     if: branch = master && type != pull_request
