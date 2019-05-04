@@ -1,8 +1,8 @@
 # Geolocation Service
 
 [![Coverage Status](https://coveralls.io/repos/github/dohernandez/geolocation-service/badge.svg?branch=master)](https://coveralls.io/github/dohernandez/geolocation-service?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/de83a0447761409ca23f04821032a248)](https://www.codacy.com/app/dohernandez/geolocation-service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dohernandez/geolocation-service&amp;utm_campaign=Badge_Grade)
-[![Docker Repository on Quay](https://quay.io/repository/dohernandez/geolocation-service/status?token=0f8d87f7-260b-4f66-a2b6-3ac18d6dc99c "Docker Repository on Quay")](https://quay.io/repository/dohernandez/geolocation-service)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/eb261bcd0f274be5b83b9af9f555099c)](https://www.codacy.com/app/dohernandez/geolocation-service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dohernandez/geolocation-service&amp;utm_campaign=Badge_Grade)
+[![Docker Repository on Quay](https://quay.io/repository/dohernandez/geolocation-service/status "Docker Repository on Quay")](https://quay.io/repository/dohernandez/geolocation-service)
 
 Geolocation-service (Service) is a service responsible for displaying geolocation data. It allows to import such data and expose it via an API.
 

@@ -3,38 +3,52 @@ language: go
 sudo: false
 
 go:
-- 1.12.x
+  - 1.12.x
 
 branches:
   only:
-  - master
-  - /(^|[-\/])(major|release|minor|feature|patch|issue|hotfix)[-\/]?/
+    - master
+    - /(^|[-\/])(major|release|minor|feature|patch|issue|hotfix)[-\/]?/
 
 env:
   global:
-  - GITHUB_OWNER=$(echo ${TRAVIS_REPO_SLUG} | cut -d"/" -f1)
-  - GITHUB_REPO=$(echo ${TRAVIS_REPO_SLUG} | cut -d"/" -f2)
-  - BINARY_NAME=${GITHUB_REPO}
-  - VERSION=$(eval ./ci/version.sh)
+    - GITHUB_OWNER=$(echo ${TRAVIS_REPO_SLUG} | cut -d"/" -f1)
+    - GITHUB_REPO=$(echo ${TRAVIS_REPO_SLUG} | cut -d"/" -f2)
+    - BINARY_NAME=${GITHUB_REPO}
+    - VERSION=$(eval ./ci/version.sh)
 
 stages:
-- "Code Style"
-- "Unit Tests"
-- "Promote Docker Image"
+  - "Code Style"
+  - "Unit Tests"
+  - "Promote Release"
+  - "Promote Docker Image"
 
 jobs:
   include:
-  - stage: "Code Style"
-    install: skip
-    script: ci/code-style.sh
-    if: branch = master || type = pull_request
+    - stage: "Code Style"
+      install: skip
+      script: ci/code-style.sh
+      if: branch = master || type = pull_request
 
-  - stage: "Unit Tests"
-    install: skip
-    script: ci/unit-tests.sh
-    if: branch = master || type = pull_request
+    - stage: "Unit Tests"
+      install: skip
+      script: ci/unit-tests.sh
+      if: branch = master || type = pull_request
 
-  - stage: "Promote Docker Image"
-    install: ci/bump-version.sh
-    script: ci/promote-docker-image.sh
-    if: branch = master && type != pull_request
+    - stage: "Promote Release"
+      install: ci/bump-version.sh
+      script: ci/promote-release.sh
+      if: branch = master && type != pull_request
+
+      deploy:
+        provider: releases
+        name: $(eval ./ci/release-name.sh)
+        api_key: $GITHUB_TOKEN
+        skip_cleanup: true
+        file: "archive/*.tar.gz"
+        file_glob: true
+
+    - stage: "Promote Docker Image"
+      install: skip
+      script: ci/promote-docker-image.sh
+      if: branch = master && type != pull_request
