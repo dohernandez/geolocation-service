@@ -2,14 +2,14 @@
 
 set -e
 
-# Configuration
-echo "Setting configuration"
-echo "VERSION ${VERSION}"
-
 if [ "${QUAY_USERNAME}" == "" ] || [ "${QUAY_PASSWORD}" == "" ]; then
     echo "No QUAY_USERNAME or QUAY_PASSWORD defined. Skipping"
     exit 0
 fi
+
+# Configuration
+echo "Setting configuration"
+echo "VERSION ${VERSION}"
 
 QUAY_REPO_SLUG="quay.io/${QUAY_USERNAME}/${BINARY_NAME}"
 

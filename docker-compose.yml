@@ -20,6 +20,6 @@ services:
     - '${POSTGRES_HOST_PORT}:5432'
     environment:
       LC_ALL: C.UTF-8
-      POSTGRES_DB: form3-service
+      POSTGRES_DB: geolocation
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password

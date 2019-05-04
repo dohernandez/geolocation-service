@@ -44,4 +44,7 @@ git clone https://github.com/fsaintjacques/semver-tool /tmp/semver &> /dev/null
 BUMPED_UP_VERSION=$(/tmp/semver/src/semver bump $BUMP $VERSION)
 
 echo "Bumped up ${BUMPED_UP_VERSION}"
+
+mkdir -p version
+
 echo "${BUMPED_UP_VERSION}" > version/version

@@ -13,7 +13,7 @@ RUN  curl -sL https://github.com/golang-migrate/migrate/releases/download/v4.2.4
 
 COPY . .
 
-RUN make build
+RUN make deps-vendor build
 
 # --- Generating api documentation
 
@@ -33,7 +33,7 @@ USER dohernandez
 COPY --from=builder --chown=dohernandez:dohernandez /bin/migrate /bin/migrate
 COPY --from=builder --chown=dohernandez:dohernandez /go/src/github.com/dohernandez/geolocation-service/bin/geolocation-service /geolocation-service
 COPY --from=ramlbuilder --chown=dohernandez:dohernandez /docs/api.html /resources/docs/api.html
-COPY --from=builder --chown=dohernandez:dohernandez /go/src/github.com/dohernandez/geolocation-service/bin/cli-geolocation-service /bin/cli-geolocation-service
+COPY --from=builder --chown=dohernandez:dohernandez /go/src/github.com/dohernandez/geolocation-service/bin/geolocation-service-import-data /bin/geolocation-service-import-data
 
 COPY resources/migrations /resources/migrations
 

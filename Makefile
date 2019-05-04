@@ -4,6 +4,9 @@ IMPORT_PATH = $(subst $(GOPATH)/src/,,$(PWD))
 
 export SERVICE_NAME ?= $(subst github.com/dohernandez/,,$(IMPORT_PATH))
 
+WORDTOREMOVE=-service
+export CLI_IMPORT_NAME ?= ${SERVICE_NAME}-import-data
+
 APP_PATH ?= $(PWD)
 APP_SCRIPTS_PATH ?= $(APP_PATH)/resources/app/scripts
 
@@ -22,23 +25,23 @@ BUILD_DIR ?= bin
 CFLAGS=-g
 export CFLAGS
 
-## Init the application
+## Init the service
 init: envfile deps
 
 ## -- Misc --
 
 ## Build binary
 build:
-	@echo ">> building binary"
+	@echo ">> building binary ${SERVICE_NAME} and ${CLI_IMPORT_NAME}"
 	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${SERVICE_NAME} cmd/servid/*
-	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/cli-${SERVICE_NAME} cmd/servid/*
+	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${CLI_IMPORT_NAME} cmd/servi/cmdimport/*
 
-## Run application (before exec this command make sure `make init` was executed)
+## Run service (before exec this command make sure `make init` was executed)
 run:
-	@echo ">> running app"
+	@echo ">> running service"
 	@go run -ldflags "${LDFLAGS}" cmd/servid/*
 
-## Run application with CompileDaemon (automatic rebuild on code change)
+## Run service with CompileDaemon (automatic rebuild on code change)
 run-compile-daemon:
 	@test -s $(shell go env GOPATH)/bin/CompileDaemon || (echo ">> installing CompileDaemon" && go get -u github.com/githubnemo/CompileDaemon)
 	@echo ">> running app with CompileDaemon"
@@ -144,7 +147,7 @@ migrate-cli:
 ## Run command with docker-compose (before exec this command make sure `make init` was executed)
 docker:
 	@echo ">> running with docker-compose"
-	@docker-compose run $(DOCKER_SERVICE_PORTS) --rm app make $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+	@docker-compose run $(DOCKER_SERVICE_PORTS) --rm servid make $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 	@kill -3 $$PPID
 	@echo "Job done, stopping make, please disregard following 'make: *** [docker-tool] Error 1'"
 	@exit 1
