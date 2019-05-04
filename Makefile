@@ -3,6 +3,8 @@ GOPATH = $(realpath $(shell go env GOPATH))
 IMPORT_PATH = $(subst $(GOPATH)/src/,,$(PWD))
 
 export SERVICE_NAME ?= $(subst github.com/dohernandez/,,$(IMPORT_PATH))
+
+WORDTOREMOVE=-service
 export CLI_IMPORT_NAME ?= ${SERVICE_NAME}-import-data
 
 APP_PATH ?= $(PWD)
@@ -31,8 +33,8 @@ init: envfile deps
 ## Build binary
 build:
 	@echo ">> building binary ${SERVICE_NAME} and ${CLI_IMPORT_NAME}"
-	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${SERVICE_NAME} cmd/servid/*
-	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${CLI_IMPORT_NAME} cmd/servi/cmdimport/*
+#	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${SERVICE_NAME} cmd/servid/*
+#	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${CLI_IMPORT_NAME} cmd/servi/cmdimport/*
 
 ## Run service (before exec this command make sure `make init` was executed)
 run:
