@@ -32,7 +32,7 @@ init: envfile deps
 build:
 	@echo ">> building binary ${SERVICE_NAME} and ${CLI_NAME}"
 	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${SERVICE_NAME} cmd/servid/*
-	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/cli-import-${NAME} cmd/servi/cmdimport/*
+	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${CLI_NAME} cmd/servi/cmdimport/*
 
 ## Run application (before exec this command make sure `make init` was executed)
 run:
