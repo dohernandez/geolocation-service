@@ -38,7 +38,7 @@ jobs:
     - stage: "Promote Release"
       install: ci/bump-version.sh
       script: ci/promote-release.sh
-      if: branch = master && type != pull_request
+      if: branch = master && type = pull_request
 
       deploy:
         provider: releases
@@ -51,4 +51,4 @@ jobs:
     - stage: "Promote Docker Image"
       install: skip
       script: ci/promote-docker-image.sh
-      if: branch = master && type != pull_request
+      if: branch = master && type = pull_request
