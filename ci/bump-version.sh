@@ -3,24 +3,23 @@ set -e
 
 # Find branch name of merge pull request
 echo "Finding branch for commit ${TRAVIS_COMMIT}"
-#BRANCH_NAME=$(curl -H "Authorization: bearer ${GITHUB_TOKEN}" -X POST -d " \
-# { \
-#   \"query\": \"query { \
-#  repository(owner:\\\"${GITHUB_OWNER}\\\", name:\\\"${GITHUB_REPO}\\\") { \
-#    pullRequests(states:MERGED, last: 10, orderBy: {field: UPDATED_AT, direction: ASC}){ \
-#      nodes{ \
-#        headRefName, \
-#        mergeCommit { \
-#          oid \
-#        } \
-#      } \
-#    } \
-#  } \
-#}\" \
-# } \
-# " https://api.github.com/graphql | jq -r ".data.repository.pullRequests.nodes[] | select(.mergeCommit.oid == \"${TRAVIS_COMMIT}\").headRefName")
+BRANCH_NAME=$(curl -H "Authorization: bearer ${GITHUB_TOKEN}" -X POST -d " \
+ { \
+   \"query\": \"query { \
+  repository(owner:\\\"${GITHUB_OWNER}\\\", name:\\\"${GITHUB_REPO}\\\") { \
+    pullRequests(states:MERGED, last: 10, orderBy: {field: UPDATED_AT, direction: ASC}){ \
+      nodes{ \
+        headRefName, \
+        mergeCommit { \
+          oid \
+        } \
+      } \
+    } \
+  } \
+}\" \
+ } \
+ " https://api.github.com/graphql | jq -r ".data.repository.pullRequests.nodes[] | select(.mergeCommit.oid == \"${TRAVIS_COMMIT}\").headRefName")
 
-BRANCH_NAME='hotfix/travis-ci'
 echo "Found the following branch for commit ${TRAVIS_COMMIT}: ${BRANCH_NAME}"
 
 # Find the largest version bump based on the merged PR's
