@@ -3,6 +3,7 @@ GOPATH = $(realpath $(shell go env GOPATH))
 IMPORT_PATH = $(subst $(GOPATH)/src/,,$(PWD))
 
 export SERVICE_NAME ?= $(subst github.com/dohernandez/,,$(IMPORT_PATH))
+export CLI_NAME ?= cli-import-${SERVICE_NAME}-data
 
 APP_PATH ?= $(PWD)
 APP_SCRIPTS_PATH ?= $(APP_PATH)/resources/app/scripts
@@ -29,9 +30,9 @@ init: envfile deps
 
 ## Build binary
 build:
-	@echo ">> building binary"
+	@echo ">> building binary ${SERVICE_NAME} and ${CLI_NAME}"
 	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/${SERVICE_NAME} cmd/servid/*
-	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/cli-${SERVICE_NAME} cmd/servid/*
+	@go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/cli-import-${NAME} cmd/servi/cmdimport/*
 
 ## Run application (before exec this command make sure `make init` was executed)
 run:
