@@ -16,14 +16,14 @@ type Persister interface {
 
 // Geolocation represent the geolocation entity
 type Geolocation struct {
-	ID           uuid.UUID `csv:"-"`
-	IPAddress    string    `csv:"ip_address"`
-	CountryCode  string    `csv:"country_code"`
-	Country      string    `csv:"country"`
-	City         string    `csv:"city"`
-	Latitude     string    `csv:"latitude"`
-	Longitude    string    `csv:"longitude"`
-	MysteryValue int64     `csv:"mystery_value"`
+	ID           uuid.UUID `csv:"-" db:"id"`
+	IPAddress    string    `csv:"ip_address" db:"ip_address"`
+	CountryCode  string    `csv:"country_code" db:"country_code"`
+	Country      string    `csv:"country" db:"country"`
+	City         string    `csv:"city" db:"city"`
+	Latitude     string    `csv:"latitude" db:"latitude"`
+	Longitude    string    `csv:"longitude" db:"longitude"`
+	MysteryValue int64     `csv:"mystery_value" db:"mystery_value"`
 }
 
 // validateCountry validates if a string is a valid country or not.
