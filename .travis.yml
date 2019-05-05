@@ -20,6 +20,7 @@ env:
 stages:
   - "Code Style"
   - "Unit Tests"
+  - "Integration Test"
   - "Promote Release"
   - "Promote Docker Image"
 
@@ -34,6 +35,25 @@ jobs:
       install: skip
       script: ci/unit-tests.sh
       if: branch = master || type = pull_request
+
+    - stage: "Integration Test"
+      install: ci/install_docker_compose.sh
+      before_script:
+      - docker-compose -f ci/assets/docker-compose.yml up -d
+      - make migrate
+      script: make test-integration
+      after_script:
+      - docker-compose -f ci/assets/docker-compose.yml down
+      if: branch = master || type = pull_request
+      env:
+      - COMPOSE_VERSION=1.23.2
+      # service environment variables Example .env.template
+      - CLI_IMPORT_NAME=geolocation-service-import-data
+      - SERVICE_NAME=geolocation-service
+      - ENVIRONMENT=test
+      - LOG_LEVEL=DEBUG
+      - WEB_PORT=8000
+      - DATABASE_DSN=postgres://user:password@postgres:5432/geolocation?sslmode=disable
 
     - stage: "Promote Release"
       install: ci/bump-version.sh
