@@ -30,6 +30,14 @@
   version = "v0.1.0"
 
 [[projects]]
+  digest = "1:5a23cd3a5496a0b2da7e3b348d14e77b11a210738c398200d7d6f04ea8cf3bd8"
+  name = "github.com/asaskevich/govalidator"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "ccb8e960c48f04d6935e72476ae4a51028f9e22f"
+  version = "v9"
+
+[[projects]]
   digest = "1:2a746ac221a2d4258461f15dccb8227b2f5923bdf6dcb563e5c8e296d31ba939"
   name = "github.com/bshuster-repo/logrus-logstash-hook"
   packages = ["."]
@@ -73,12 +81,39 @@
   version = "v1.0.1"
 
 [[projects]]
+  digest = "1:0e8048fcb6ee925a40c4f8c1e034e78e0c1c07cf6d2693d85ea8a0c9055c4386"
+  name = "github.com/go-ozzo/ozzo-validation"
+  packages = [
+    ".",
+    "is",
+  ]
+  pruneopts = "NUT"
+  revision = "106681dbb37bfa3e7683c4c8129cb7f5925ea3e9"
+  version = "v3.5.0"
+
+[[projects]]
   digest = "1:91358b3a314c1ddfd4d6445ca9c1fb846842c31c153e626730594b3c95f73f4a"
   name = "github.com/go-stack/stack"
   packages = ["."]
   pruneopts = "NUT"
   revision = "2fee6af1a9795aafbe0253a0cfbdf668e1fb8a9a"
   version = "v1.8.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:7d8b4ad316f6cd7944c888e4631cd09b15cedf6ec824b30359c01bf20139c177"
+  name = "github.com/gocarina/gocsv"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "2fc85fcf0c07e8bb9123b2104e84cfc2a5b53724"
+
+[[projects]]
+  digest = "1:ab3ec1fe3e39bac4b3ab63390767766622be35b7cab03f47f787f9ec60522a53"
+  name = "github.com/google/uuid"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
+  version = "v1.1.1"
 
 [[projects]]
   digest = "1:11c6c696067d3127ecf332b10f89394d386d9083f82baf71f40f2da31841a009"
@@ -313,6 +348,10 @@
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
     "github.com/go-chi/render",
+    "github.com/go-ozzo/ozzo-validation",
+    "github.com/go-ozzo/ozzo-validation/is",
+    "github.com/gocarina/gocsv",
+    "github.com/google/uuid",
     "github.com/hellofresh/health-go",
     "github.com/hellofresh/logging-go",
     "github.com/jmoiron/sqlx",
