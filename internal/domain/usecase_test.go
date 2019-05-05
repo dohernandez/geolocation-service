@@ -8,18 +8,27 @@ import (
 	"github.com/dohernandez/geolocation-service/internal/domain"
 	"github.com/dohernandez/geolocation-service/pkg/log"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestImportGeolocationFromCSVFileUseCase(t *testing.T) {
 	testCases := []struct {
-		scenario string
-
-		assert func(t *testing.T, uc domain.ImportGeolocationFromCSVFileUseCase)
+		scenario      string
+		persisterFunc func(g *domain.Geolocation) error
+		assert        func(t *testing.T, uc domain.ImportGeolocationFromCSVFileUseCase)
 	}{
 		{
 			scenario: "Import data successfully",
+			persisterFunc: func(g *domain.Geolocation) error {
+				// checking that the geolocation object is valid
+				assert.NoError(t, g.Validate())
+				// checking that the geolocation object has ID
+				assert.NotEqual(t, uuid.Nil, g.ID)
+
+				return nil
+			},
 			assert: func(t *testing.T, uc domain.ImportGeolocationFromCSVFileUseCase) {
 				in := `ip_address,country_code,country,city,latitude,longitude,mystery_value
 200.106.141.15,SI,Nepal,DuBuquemouth,-84.87503094689836,7.206435933364332,7823011346
@@ -33,8 +42,42 @@ func TestImportGeolocationFromCSVFileUseCase(t *testing.T) {
 				l := logrus.New()
 				ctx := log.ToContext(context.TODO(), l)
 
-				err := uc.Do(ctx, strings.NewReader(in))
+				err, processed, accepted, discarded := uc.Do(ctx, strings.NewReader(in))
 				assert.NoError(t, err)
+				assert.Equal(t, 7, processed)
+				assert.Equal(t, 4, accepted)
+				assert.Equal(t, 3, discarded)
+			},
+		},
+		{
+			scenario: "Import data failed, malformed csv file",
+			persisterFunc: func(g *domain.Geolocation) error {
+				panic("should not be called")
+			},
+			assert: func(t *testing.T, uc domain.ImportGeolocationFromCSVFileUseCase) {
+				in := `ip_address,country_code,country,city,latitude,longitude
+200.106.141.15,SI,Nepal,DuBuquemouth,-84.87503094689836,7.206435933364332,7823011346
+160.103.7.140,CZ,Nicaragua,New Neva,-68.31023296602508,-37.62435199624531,7301823115`
+
+				err, _, _, _ := uc.Do(context.TODO(), strings.NewReader(in))
+				assert.Error(t, err)
+			},
+		},
+		{
+			scenario: "Skipped all import data, persist database failed",
+			persisterFunc: func(g *domain.Geolocation) error {
+				return errors.New("DB error")
+			},
+			assert: func(t *testing.T, uc domain.ImportGeolocationFromCSVFileUseCase) {
+				in := `ip_address,country_code,country,city,latitude,longitude,mystery_value
+200.106.141.15,SI,Nepal,DuBuquemouth,-84.87503094689836,7.206435933364332,7823011346
+160.103.7.140,CZ,Nicaragua,New Neva,-68.31023296602508,-37.62435199624531,7301823115`
+
+				err, processed, accepted, discarded := uc.Do(context.TODO(), strings.NewReader(in))
+				assert.NoError(t, err)
+				assert.Equal(t, 2, processed)
+				assert.Equal(t, 0, accepted)
+				assert.Equal(t, 2, discarded)
 			},
 		},
 	}
@@ -42,14 +85,7 @@ func TestImportGeolocationFromCSVFileUseCase(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc // Pinning ranged variable, more info: https://github.com/kyoh86/scopelint
 		t.Run(tc.scenario, func(t *testing.T) {
-			pMock := domain.NewCallbackPersisterMock(func(g *domain.Geolocation) error {
-				// checking that the geolocation object is valid
-				assert.NoError(t, g.Validate())
-				// checking that the geolocation object has ID
-				assert.NotEqual(t, uuid.Nil, g.ID)
-
-				return nil
-			})
+			pMock := domain.NewCallbackPersisterMock(tc.persisterFunc)
 
 			uc := domain.NewImportGeolocationFromCSVFileToDBUseCase(pMock)
 

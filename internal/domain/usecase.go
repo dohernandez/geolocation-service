@@ -13,7 +13,7 @@ type (
 	// ImportGeolocationFromCSVFileUseCase defines use case api for importing geolocation data
 	// from csv file
 	ImportGeolocationFromCSVFileUseCase interface {
-		Do(ctx context.Context, f io.Reader) error
+		Do(ctx context.Context, f io.Reader) (err error, processed, accepted, discarded int)
 	}
 )
 
@@ -47,13 +47,11 @@ func NewImportGeolocationFromCSVFileToDBUseCase(persister Persister) ImportGeolo
 //
 //		uc.Do(ctx, file)
 //
-func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.Reader) error {
+func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.Reader) (err error, processed, accepted, discarded int) {
 	var gs []Geolocation
-	if err := gocsv.Unmarshal(f, &gs); err != nil {
-		return err
+	if err = gocsv.Unmarshal(f, &gs); err != nil {
+		return err, processed, accepted, discarded
 	}
-
-	var processed, accepted, discarded int
 
 	for _, g := range gs {
 		processed++
@@ -65,7 +63,10 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 		}
 
 		g.ID = uuid.New()
-		if err := uc.persister.Persist(ctx, &g); err != nil {
+
+		// Using a reference for the variable on range scope `g` (scopelint)
+		pg := g
+		if err := uc.persister.Persist(ctx, &pg); err != nil {
 			discarded++
 
 			continue
@@ -131,5 +132,5 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 			Infof("Import Geolocation From CSV to DB")
 	}
 
-	return nil
+	return nil, processed, accepted, discarded
 }
