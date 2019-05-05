@@ -55,8 +55,13 @@ echo "PASS"
 echo
 
 printf "Checking goimports: "
+
+# checking if goimports is available
+test -s "$GOPATH"/bin/goimports || echo ">> installing goimports" && GOBIN="$GOPATH"/bin go get -u golang.org/x/tools/cmd/goimports
+
+
 # shellcheck disable=SC2046
-ERRS=$(goimports -l $(cat changed_files.txt) 2>&1 || true)
+ERRS=$("$GOPATH"/bin/goimports -l $(cat changed_files.txt) 2>&1 || true)
 if [ -n "${ERRS}" ]; then
     echo "FAIL"
     echo "${ERRS}"
