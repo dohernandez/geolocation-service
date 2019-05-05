@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 
+	"github.com/dohernandez/geolocation-service/pkg/log"
 	"github.com/gocarina/gocsv"
 	"github.com/google/uuid"
 )
@@ -36,6 +37,8 @@ func NewImportGeolocationFromCSVFileToDBUseCase(persister Persister) ImportGeolo
 //		discarded - hold the amount of Geolocation discarded due to invalidation or duplication
 //
 func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.Reader) (processed, accepted, discarded int, err error) {
+	logger := log.FromContext(ctx)
+
 	var gs []Geolocation
 	if err = gocsv.Unmarshal(f, &gs); err != nil {
 		return processed, accepted, discarded, err
@@ -45,6 +48,13 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 		processed++
 
 		if err := g.Validate(); err != nil {
+			if logger != nil {
+				logger.
+					WithError(err).
+					WithField("geolocation", g).
+					Debugf("Error validation")
+			}
+
 			discarded++
 
 			continue
@@ -55,6 +65,13 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 		// Using a reference for the variable on range scope `g` (scopelint)
 		pg := g
 		if err := uc.persister.Persist(ctx, &pg); err != nil {
+			if logger != nil {
+				logger.
+					WithError(err).
+					WithField("geolocation", g).
+					Debugf("Error persist")
+			}
+
 			discarded++
 
 			continue

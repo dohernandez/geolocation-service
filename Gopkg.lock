@@ -178,6 +178,18 @@
   version = "v1.0.1"
 
 [[projects]]
+  digest = "1:3493089e5754b1471b97e783de2fb38f5bd4b68728d09046ec4a1e7e6ec48574"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid",
+    "scram",
+  ]
+  pruneopts = "NUT"
+  revision = "bc6a3c0594130b1e34005880bc600b6d3f49fa7f"
+  version = "v1.1.1"
+
+[[projects]]
   digest = "1:d244f8666a838fe6ad70ec8fe77f50ebc29fdc3331a2729ba5886bef8435d10d"
   name = "github.com/magiconair/properties"
   packages = ["."]
@@ -345,6 +357,7 @@
     "github.com/DATA-DOG/godog",
     "github.com/DATA-DOG/godog/colors",
     "github.com/DATA-DOG/godog/gherkin",
+    "github.com/asaskevich/govalidator",
     "github.com/go-chi/chi",
     "github.com/go-chi/chi/middleware",
     "github.com/go-chi/render",
@@ -356,6 +369,7 @@
     "github.com/hellofresh/logging-go",
     "github.com/jmoiron/sqlx",
     "github.com/kelseyhightower/envconfig",
+    "github.com/lib/pq",
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "github.com/stretchr/testify/assert",

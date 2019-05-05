@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/dohernandez/geolocation-service/internal/domain"
 	"github.com/dohernandez/geolocation-service/internal/platform/app"
+	logger "github.com/dohernandez/geolocation-service/pkg/log"
 	"github.com/dohernandez/geolocation-service/pkg/version"
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
 
@@ -17,16 +21,59 @@ func main() {
 		return
 	}
 
+	ctx, cancelCtx := context.WithCancel(context.TODO())
+	defer cancelCtx()
+
 	cfg, err := app.LoadEnv()
 	if err != nil {
 		panic("failed to load config: " + err.Error())
 	}
 
+	c, err := app.NewAppContainer(cfg)
+	if err != nil {
+		panic("failed init application container: " + err.Error())
+	}
+
 	app := cli.NewApp()
 	app.Version = version.Info().Version
 	app.Name = cfg.CliImport
+
 	app.Usage = "To import data from a csv file."
 	app.UsageText = fmt.Sprintf("%s [arguments]", cfg.CliImport)
+
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "file, f",
+			Usage: "csv file",
+		},
+	}
+
+	app.Action = func(ctxCli *cli.Context) error {
+		filepath := ctxCli.String("file")
+
+		if filepath == "" {
+			return errors.New("file must be defined.")
+		}
+
+		f, err := os.Open(filepath)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		// create context with logger
+		lCtx := logger.ToContext(ctx, c.Logger())
+
+		uc := domain.NewImportGeolocationFromCSVFileToDBUseCase(c.GeolocationPersister())
+		processed, accepted, discarded, err := uc.Do(lCtx, f)
+
+		fmt.Println("Import statistics")
+		fmt.Printf("processed: %d\n", processed)
+		fmt.Printf("accepted: %d\n", accepted)
+		fmt.Printf("discarded: %d\n", discarded)
+
+		return nil
+	}
 
 	err = app.Run(os.Args)
 	if err != nil {
