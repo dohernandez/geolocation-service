@@ -1,9 +1,8 @@
 package domain_test
 
 import (
-	"testing"
-
 	"fmt"
+	"testing"
 
 	"github.com/dohernandez/geolocation-service/internal/domain"
 	"github.com/stretchr/testify/assert"
