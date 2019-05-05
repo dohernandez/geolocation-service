@@ -1,13 +1,10 @@
 package storage_test
 
 import (
-	"testing"
-
-	"fmt"
-
 	"context"
-
 	"database/sql"
+	"fmt"
+	"testing"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/dohernandez/geolocation-service/internal/domain"

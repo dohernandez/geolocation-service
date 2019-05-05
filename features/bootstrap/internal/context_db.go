@@ -61,7 +61,7 @@ func (c *DBContext) thereShouldBeGeolocationsStoredInTheTable(amount int, table 
 
 	err := c.DB.Get(&a, query)
 	if err != nil {
-		return errors.Wrapf(err, "query [%s] with args [%+v]", query)
+		return errors.Wrapf(err, "query [%s]", query)
 	}
 
 	if a != amount {

@@ -10,7 +10,8 @@ import (
 type importCsvDataContext struct {
 }
 
-func RegisterImportCsvDataContext(s *godog.Suite) {
+// RegisterFileContext register execute create file steps
+func RegisterFileContext(s *godog.Suite) {
 	c := importCsvDataContext{}
 
 	s.Step(`^there is a csv file in the path "([^"]*)" with the following content$`, c.thereIsACsvFileInThePathWithTheFollowingContent)

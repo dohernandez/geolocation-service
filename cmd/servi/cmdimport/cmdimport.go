@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"path/filepath"
+
 	"github.com/dohernandez/geolocation-service/internal/domain"
 	"github.com/dohernandez/geolocation-service/internal/platform/app"
 	logger "github.com/dohernandez/geolocation-service/pkg/log"
@@ -49,16 +51,17 @@ func main() {
 	}
 
 	app.Action = func(ctxCli *cli.Context) error {
-		filepath := ctxCli.String("file")
+		fp := ctxCli.String("file")
 
-		if filepath == "" {
-			return errors.New("file must be defined.")
+		if fp == "" {
+			return errors.New("file must be defined")
 		}
 
-		f, err := os.Open(filepath)
+		f, err := os.Open(filepath.Clean(fp))
 		if err != nil {
 			return err
 		}
+		// nolint:errcheck
 		defer f.Close()
 
 		// create context with logger
@@ -66,6 +69,9 @@ func main() {
 
 		uc := domain.NewImportGeolocationFromCSVFileToDBUseCase(c.GeolocationPersister())
 		processed, accepted, discarded, err := uc.Do(lCtx, f)
+		if err != nil {
+			return err
+		}
 
 		fmt.Println("Import statistics")
 		fmt.Printf("processed: %d\n", processed)

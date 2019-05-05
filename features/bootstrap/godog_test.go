@@ -43,6 +43,6 @@ func TestIntegration(t *testing.T) {
 		internal.RegisterCommandContext(s)
 		internal.RegisterDBContext(s, c.DB())
 
-		RegisterImportCsvDataContext(s)
+		RegisterFileContext(s)
 	}, t)
 }
