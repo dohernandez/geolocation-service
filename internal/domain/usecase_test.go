@@ -42,7 +42,7 @@ func TestImportGeolocationFromCSVFileUseCase(t *testing.T) {
 				l := logrus.New()
 				ctx := log.ToContext(context.TODO(), l)
 
-				err, processed, accepted, discarded := uc.Do(ctx, strings.NewReader(in))
+				processed, accepted, discarded, err := uc.Do(ctx, strings.NewReader(in))
 				assert.NoError(t, err)
 				assert.Equal(t, 7, processed)
 				assert.Equal(t, 4, accepted)
@@ -59,7 +59,7 @@ func TestImportGeolocationFromCSVFileUseCase(t *testing.T) {
 200.106.141.15,SI,Nepal,DuBuquemouth,-84.87503094689836,7.206435933364332,7823011346
 160.103.7.140,CZ,Nicaragua,New Neva,-68.31023296602508,-37.62435199624531,7301823115`
 
-				err, _, _, _ := uc.Do(context.TODO(), strings.NewReader(in))
+				_, _, _, err := uc.Do(context.TODO(), strings.NewReader(in))
 				assert.Error(t, err)
 			},
 		},
@@ -73,7 +73,7 @@ func TestImportGeolocationFromCSVFileUseCase(t *testing.T) {
 200.106.141.15,SI,Nepal,DuBuquemouth,-84.87503094689836,7.206435933364332,7823011346
 160.103.7.140,CZ,Nicaragua,New Neva,-68.31023296602508,-37.62435199624531,7301823115`
 
-				err, processed, accepted, discarded := uc.Do(context.TODO(), strings.NewReader(in))
+				processed, accepted, discarded, err := uc.Do(context.TODO(), strings.NewReader(in))
 				assert.NoError(t, err)
 				assert.Equal(t, 2, processed)
 				assert.Equal(t, 0, accepted)
