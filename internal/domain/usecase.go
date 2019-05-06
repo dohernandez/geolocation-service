@@ -2,7 +2,9 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"sync"
 
 	"github.com/dohernandez/geolocation-service/pkg/log"
 	"github.com/gocarina/gocsv"
@@ -44,41 +46,122 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 		return processed, accepted, discarded, err
 	}
 
-	for _, g := range gs {
-		processed++
+	vch := make(chan Geolocation)
+	ech := make(chan error)
+	sch := make(chan Geolocation)
 
-		if err := g.Validate(); err != nil {
-			if logger != nil {
-				logger.
-					WithError(err).
-					WithField("geolocation", g).
-					Debugf("Error validation")
+	var wg sync.WaitGroup
+	// this along with wg.Wait() are why the error handling works and doesn't deadlock.
+	finished := make(chan bool, 1)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for _, g := range gs {
+			processed++
+			fmt.Println(processed)
+
+			g := g // Pinning ranged variable, more info: https://github.com/kyoh86/scopelint
+
+			if err := g.Validate(); err != nil {
+				if logger != nil {
+					logger.
+						WithError(err).
+						WithField("geolocation", g).
+						Debugf("Error validation")
+				}
+
+				ech <- err
+
+				continue
 			}
 
-			discarded++
-
-			continue
+			vch <- g
 		}
 
-		g.ID = uuid.New()
+		close(vch)
+	}()
 
-		// Using a reference for the variable on range scope `g` (scopelint)
-		pg := g
-		if err := uc.persister.Persist(ctx, &pg); err != nil {
-			if logger != nil {
-				logger.
-					WithError(err).
-					WithField("geolocation", g).
-					Debugf("Error persist")
+	concurrency := 20
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		var wgp sync.WaitGroup
+		cncr := concurrency
+
+		for {
+
+			g, ok := <-vch
+			if !ok {
+				break
 			}
 
-			discarded++
+			wgp.Add(1)
+			cncr--
 
-			continue
+			go func() {
+				defer func() {
+					cncr++
+
+					wgp.Done()
+				}()
+
+				g.ID = uuid.New()
+
+				if err := uc.persister.Persist(ctx, &g); err != nil {
+					if logger != nil {
+						logger.
+							WithError(err).
+							WithField("geolocation", g).
+							Debugf("Error persist")
+					}
+
+					ech <- err
+
+					return
+				}
+
+				sch <- g
+			}()
+
+			for {
+				if cncr != 0 {
+					break
+				}
+			}
 		}
 
-		accepted++
+		wgp.Wait()
+	}()
+
+	// Wait for all processes to return and then close the result chan.
+	go func() {
+		wg.Wait()
+
+		close(finished)
+	}()
+
+	var fin bool
+	for {
+		select {
+		case <-finished:
+			fin = true
+		case <-ech:
+			discarded++
+		case <-sch:
+			accepted++
+		}
+
+		if fin {
+			break
+		}
 	}
+
+	close(ech)
+	close(sch)
 
 	return processed, accepted, discarded, nil
 }

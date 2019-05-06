@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/dohernandez/geolocation-service/internal/domain"
 	"github.com/dohernandez/geolocation-service/internal/platform/app"
-	logger "github.com/dohernandez/geolocation-service/pkg/log"
 	"github.com/dohernandez/geolocation-service/pkg/version"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -64,15 +64,20 @@ func main() {
 		defer f.Close()
 
 		// create context with logger
-		lCtx := logger.ToContext(ctx, c.Logger())
+		//lCtx := logger.ToContext(ctx, c.Logger())
 
 		uc := domain.NewImportGeolocationFromCSVFileToDBUseCase(c.GeolocationPersister())
-		processed, accepted, discarded, err := uc.Do(lCtx, f)
+
+		start := time.Now()
+		processed, accepted, discarded, err := uc.Do(ctx, f)
+		elapsed := time.Since(start)
+
 		if err != nil {
 			return err
 		}
 
 		fmt.Println("Import statistics")
+		fmt.Printf("time elapsed: %s\n", elapsed)
 		fmt.Printf("processed: %d\n", processed)
 		fmt.Printf("accepted: %d\n", accepted)
 		fmt.Printf("discarded: %d\n", discarded)
