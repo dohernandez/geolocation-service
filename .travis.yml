@@ -53,7 +53,7 @@ jobs:
       - ENVIRONMENT=test
       - LOG_LEVEL=DEBUG
       - WEB_PORT=8000
-      - DATABASE_DSN=postgres://user:password@postgres:5432/geolocation?sslmode=disable
+      - DATABASE_DSN=postgres://user:password@postgres:5434/geolocation?sslmode=disable
 
     - stage: "Promote Release"
       install: ci/bump-version.sh

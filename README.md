@@ -20,7 +20,6 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
     - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
     - [Known issues](#known-issues)
-- [Resources](resources)
     
 ## Getting started
 
@@ -251,7 +250,7 @@ Creating network "geolocation-service_default" with the default driver
 ...
 WARNING: Image for service api was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
 Creating geolocation-service_postgres_1 ... done
-Creating geolocation-service_api_1      ... done
+Creating geolocation-service_servid_1   ... done
 
 ```
 
@@ -279,9 +278,9 @@ make servid-stop
 
 ```bash
 >> stop API service in port 8008 and postgres in port 5434
-Stopping geolocation-service_api_1 ... done
+Stopping geolocation-service_servid_1 ... done
 Stopping fgeolocation-service_postgres_1 ... done
-Removing geolocation-service_api_1 ... done
+Removing geolocation-service_servid_1 ... done
 Removing geolocation-service_postgres_1 ... done
 Removing network geolocation-service_default
 ```
@@ -313,8 +312,14 @@ Before running the test suite (unit test and behavioral test), make sure `.env` 
 
 then you can run
 
+- **Unit test**
 ```
-make env test
+make env test-unit
+```
+
+- **Integration test**
+```
+make env test-integration
 ```
 
 otherwise see routine operations defined in `Makefile` to run each suite independently.
@@ -326,7 +331,7 @@ Another way to run the complete test suite is using docker. By using docker, the
 make docker test
 ```
 
-This is the most simple way to quickly start testing your app after cloning the repo, though it has low performance and is harder to debug.
+This is the most simple way to quickly start testing your service after cloning the repo, though it has low performance and is harder to debug.
 
 [[table of contents]](#table-of-contents)
 
@@ -335,14 +340,5 @@ This is the most simple way to quickly start testing your app after cloning the 
 ### Known issues
 
 There are no known issues.
-
-[[table of contents]](#table-of-contents)
-
-## Resources
-
-#### How to set up postman client
-
-1. Install [Postman](https://www.getpostman.com/products)
-2. Import the postman collection file [resources/postman/FORM3.postman_collection.json](resources/postman/FORM3.postman_collection.json) using the option `Import > Import From Link` 
 
 [[table of contents]](#table-of-contents)
