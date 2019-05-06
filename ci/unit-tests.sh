@@ -9,7 +9,7 @@ go get github.com/mattn/goveralls
 make deps-vendor
 
 # Running tests
-make test
+make test-unit
 
 
 if [ "${CODECOV_TOKEN}" == "" ]; then
