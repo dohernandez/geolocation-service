@@ -6,7 +6,10 @@ set -e
 go get github.com/mattn/goveralls
 
 # Installing vendor
-make deps-vendor
+make deps-vendor build
+
+# Run migration
+make migrate
 
 # Running integration tests
 make test-integration
@@ -19,4 +22,4 @@ fi
 
 # Upload coverage results
 # Example https://docs.coveralls.io/go
-$GOPATH/bin/goveralls features/bootstrap/profile.coverprofile -service=travis-ci -repotoken $CODECOV_TOKEN
+$GOPATH/bin/goveralls -coverprofile=features/bootstrap/profile.coverprofile -service=travis-ci -repotoken $CODECOV_TOKEN
