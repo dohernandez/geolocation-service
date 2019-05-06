@@ -9,7 +9,8 @@ import (
 type Config struct {
 	app.Config
 
-	CliImport string `envconfig:"CLI_IMPORT"`
+	DatabaseDSN string `envconfig:"DATABASE_DSN" required:"true"`
+	CliImport   string `envconfig:"CLI_IMPORT_NAME"`
 }
 
 // LoadEnv load env variables into Config.

@@ -50,6 +50,14 @@
   name = "github.com/urfave/cli"
   version = "1.20.0"
 
+[[constraint]]
+  name = "github.com/gocarina/gocsv"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/go-ozzo/ozzo-validation"
+  version = "3.5.0"
+
 [prune]
   go-tests = true
   unused-packages = true

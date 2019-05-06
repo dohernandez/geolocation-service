@@ -1,13 +1,13 @@
 # detecting GOPATH and removing trailing "/" if any
 GOPATH = $(realpath $(shell go env GOPATH))
-IMPORT_PATH = $(subst $(GOPATH)/src/,,$(PWD))
+IMPORT_PATH = $(subst $(GOPATH)/src/,,$(realpath $(shell pwd)))
 
 export SERVICE_NAME ?= $(subst github.com/dohernandez/,,$(IMPORT_PATH))
 
 WORDTOREMOVE=-service
 export CLI_IMPORT_NAME ?= ${SERVICE_NAME}-import-data
 
-APP_PATH ?= $(PWD)
+APP_PATH ?= $(realpath $(shell pwd))
 APP_SCRIPTS_PATH ?= $(APP_PATH)/resources/app/scripts
 
 branch = $(shell git symbolic-ref HEAD 2>/dev/null)

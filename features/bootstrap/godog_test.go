@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/godog"
+	"github.com/dohernandez/geolocation-service/features/bootstrap/internal"
 	"github.com/dohernandez/geolocation-service/internal/platform/app"
 	"github.com/dohernandez/geolocation-service/internal/platform/http"
 	"github.com/dohernandez/geolocation-service/pkg/http/server"
@@ -39,5 +40,9 @@ func TestIntegration(t *testing.T) {
 
 	feature.RunSuite("..", func(_ *testing.T, s *godog.Suite) {
 		feature.RegisterRestContext(s, baseURL)
+		internal.RegisterCommandContext(s)
+		internal.RegisterDBContext(s, c.DB())
+
+		RegisterFileContext(s)
 	}, t)
 }

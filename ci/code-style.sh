@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# detecting GOPATH and removing trailing "/" if any
+GOPATH="$(go env GOPATH)"
+GOPATH=${GOPATH%/}
+
 # Configuration
 echo "Setting configuration"
 FILE_EXTENSIONS='\.go$'
@@ -19,9 +23,13 @@ echo "Affected files: ${CHANGE_COUNT}"
 
 # Code style checker begin
 printf "Checking golint: "
+
+# checking if golint is available
+test -s "$GOPATH"/bin/golint || echo ">> installing golint" && GOBIN="$GOPATH"/bin go get -u golang.org/x/lint/golint
+
 err_count=0
 while IFS= read -r file; do
-  if ! golint -set_exit_status "$file"; then
+  if ! "$GOPATH"/bin/golint -set_exit_status "$file"; then
     err_count=$((err_count+1))
   fi
 done < changed_files.txt
@@ -47,8 +55,13 @@ echo "PASS"
 echo
 
 printf "Checking goimports: "
+
+# checking if goimports is available
+test -s "$GOPATH"/bin/goimports || echo ">> installing goimports" && GOBIN="$GOPATH"/bin go get -u golang.org/x/tools/cmd/goimports
+
+
 # shellcheck disable=SC2046
-ERRS=$(goimports -l $(cat changed_files.txt) 2>&1 || true)
+ERRS=$("$GOPATH"/bin/goimports -l $(cat changed_files.txt) 2>&1 || true)
 if [ -n "${ERRS}" ]; then
     echo "FAIL"
     echo "${ERRS}"

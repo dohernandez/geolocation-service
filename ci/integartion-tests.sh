@@ -6,10 +6,13 @@ set -e
 go get github.com/mattn/goveralls
 
 # Installing vendor
-make deps-vendor
+make deps-vendor build
 
-# Running tests
-make test-unit
+# Run migration
+make migrate
+
+# Running integration tests
+make test-integration
 
 
 if [ "${CODECOV_TOKEN}" == "" ]; then
@@ -19,4 +22,4 @@ fi
 
 # Upload coverage results
 # Example https://docs.coveralls.io/go
-$GOPATH/bin/goveralls -coverprofile=overalls.coverprofile -service=travis-ci -repotoken $CODECOV_TOKEN
+$GOPATH/bin/goveralls -coverprofile=features/bootstrap/profile.coverprofile -service=travis-ci -repotoken $CODECOV_TOKEN
