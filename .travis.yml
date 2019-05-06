@@ -18,23 +18,23 @@ env:
     - VERSION=$(eval ./ci/version.sh)
 
 stages:
-#  - "Code Style"
-#  - "Unit Tests"
+  - "Code Style"
+  - "Unit Tests"
   - "Integration Test"
   - "Promote Release"
   - "Promote Docker Image"
 
 jobs:
   include:
-#    - stage: "Code Style"
-#      install: skip
-#      script: ci/code-style.sh
-#      if: branch = master || type = pull_request
-#
-#    - stage: "Unit Tests"
-#      install: skip
-#      script: ci/unit-tests.sh
-#      if: branch = master || type = pull_request
+    - stage: "Code Style"
+      install: skip
+      script: ci/code-style.sh
+      if: branch = master || type = pull_request
+
+    - stage: "Unit Tests"
+      install: skip
+      script: ci/unit-tests.sh
+      if: branch = master || type = pull_request
 
     - stage: "Integration Test"
       install: ci/install_docker_compose.sh
