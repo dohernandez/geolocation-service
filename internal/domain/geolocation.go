@@ -14,6 +14,11 @@ type Persister interface {
 	Persist(ctx context.Context, g *Geolocation) error
 }
 
+// Finder defines the finder api for finding geolocation entities
+type Finder interface {
+	ByIpAddress(ctx context.Context, ip string) (*Geolocation, error)
+}
+
 // Geolocation represent the geolocation entity
 type Geolocation struct {
 	ID           uuid.UUID `csv:"-" db:"id"`
