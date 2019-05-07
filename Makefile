@@ -156,12 +156,12 @@ docker:
 
 ## Start the service (before exec this command make sure `make init` was executed)
 servid-start:
-	@echo ">> starting the service in port ${GEOLOCATION_SERVICE_HOST_PORT}"
+	@echo ">> starting the service in port ${SERVICE_HOST_PORT} and postgres in port ${POSTGRES_HOST_PORT}"
 	@docker-compose up -d
 
 ## Stop API service
 servid-stop:
-	@echo ">> stopping the service in port ${GEOLOCATION_SERVICE_HOST_PORT}"
+	@echo ">> stopping the service in port ${SERVICE_HOST_PORT} and postgres in port ${POSTGRES_HOST_PORT}"
 	@docker-compose down -v
 
 ## Display the service log
@@ -176,7 +176,7 @@ servid-log:
 ## Arguments:
 ##   FILE     Require file to run. Import data from the given file. Only support csv format.
 cmdimport:
-	@echo ">> starting service in port ${GEOLOCATION_SERVICE_HOST_PORT}"
+	@echo ">> starting service in port ${SERVICE_HOST_PORT} and postgres in port ${POSTGRES_HOST_PORT}"
 	@mkdir -p resources/tmp
 	@cp ${FILE} resources/tmp/data.csv
 	@docker-compose run $(DOCKER_SERVICE_PORTS) --rm servid bin/${CLI_IMPORT_NAME} -f resources/tmp/data.csv
