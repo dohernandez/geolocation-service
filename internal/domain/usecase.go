@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"sync"
 
@@ -62,8 +61,6 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 
 		for _, g := range gs {
 			processed++
-			fmt.Println(processed)
-
 			g := g // Pinning ranged variable, more info: https://github.com/kyoh86/scopelint
 
 			if err := g.Validate(); err != nil {

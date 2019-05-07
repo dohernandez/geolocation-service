@@ -323,7 +323,7 @@ make env test-unit
 make docker test-integration
 ```
 
-**Note** to run `Integration test` you will need to have a database running, so that why we highly recommend using `make docker <command>` to execute the suite test.
+**Note** to run `Integration test` you will need to have a database running, so that why we highly recommend using `make docker <command>` to execute the suite test. Don't forget to run migration in case need it.
 
 Another way to run the complete test suite is using docker. By using docker, there is no need to add any entries to your `/etc/hosts`:
 
@@ -349,18 +349,43 @@ Start the service
 make servid-start
 ```
 
-It will start the service on the port defined in your `.env` file. Once is up and running you can access to it thro [http://localhost:8008](http://localhost:8008). 
+It will start the service on the port defined in your `.env` file. Once is up and running you can access to it thro [http://localhost:8008](http://localhost:8008).
+
+
+Run migration
+
+```bash
+make docker migrate
+``` 
 
 Import geolocalation data. (data use for this example can be found in `resources/data/data_dump.csv`)
 
 ```bash
 make cmdimport FILE=resources/data/data_dump.csv
+...
+Import statistics
+time elapsed: 700.6662ms
+processed: 100
+accepted: 59
+discarded: 41
 ```
 
 then you can request the geolocation details from any of the ip defined in the file. Example:
 
-- [http://localhost:8008/16.70.191.240](http://localhost:8008/16.70.191.240). You should get a json response.
+- [http://localhost:8008/geolocation/16.70.191.240](http://localhost:8008/geolocation/16.70.191.240). You should get a json response.
 
+```json
+{
+    "id": "ec4ee221-fed3-4c8e-9a73-d5aafb9c8e83",
+    "ip_address": "16.70.191.240",
+    "country_code": "MP",
+    "country": "New Zealand",
+    "city": "Port Mateo",
+    "latitude": "28.208639115578364",
+    "longitude": "-66.21699714924827",
+    "mystery_value": 4779368757
+}
+```
 
 
 [[table of contents]](#table-of-contents)
