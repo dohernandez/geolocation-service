@@ -13,7 +13,7 @@ import (
 func NewRouter(c *app.Container) chi.Router {
 	r := router.NewRouter(c.Container)
 
-	r.Method(http.MethodGet, "/geolocation/{ip_address}", geolocation.NewGetIpAddressHandler(c))
+	r.Method(http.MethodGet, "/geolocation/{ip_address}", geolocation.NewGetIPAddressHandler(c))
 
 	return r
 }

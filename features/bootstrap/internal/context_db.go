@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-
 	"time"
 
 	"github.com/DATA-DOG/godog"
@@ -60,8 +59,6 @@ func (c *DBContext) thatTheFollowingGeolocationsAreStoredInTheTable(table string
 	time.Sleep(1 * time.Second)
 
 	return nil
-
-	return godog.ErrPending
 }
 
 func (c *DBContext) thereShouldBeGeolocationsStoredInTheTable(amount int, table string) error {

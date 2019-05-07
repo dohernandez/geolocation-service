@@ -13,8 +13,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// NewGetIpAddressHandler creates Handler
-func NewGetIpAddressHandler(c interface {
+// NewGetIPAddressHandler creates Handler
+func NewGetIPAddressHandler(c interface {
 	GeolocationFinder() domain.Finder
 	Logger() logrus.FieldLogger
 }) http.HandlerFunc {
@@ -29,7 +29,7 @@ func NewGetIpAddressHandler(c interface {
 		}
 
 		ctx = log.ToContext(ctx, c.Logger())
-		g, err := c.GeolocationFinder().ByIpAddress(ctx, ipAddress)
+		g, err := c.GeolocationFinder().ByIPAddress(ctx, ipAddress)
 		if err != nil {
 			if err == domain.ErrNotFound {
 				must.NotFail(render.Render(w, r, rest.ErrNotFound(err)))

@@ -34,6 +34,7 @@ func TestFinder(t *testing.T) {
 			scenario: "Successfully find goelocation by ip address",
 			ip:       "160.103.7.140",
 			setMockExpectation: func(ip string, g *domain.Geolocation, mock sqlmock.Sqlmock) {
+				// #nosec G201
 				mock.ExpectQuery(fmt.Sprintf(`^SELECT .+ FROM %[1]s WHERE .+$`, table)).WithArgs(
 					ip,
 				).WillReturnError(
@@ -63,6 +64,7 @@ func TestFinder(t *testing.T) {
 			scenario: "Find goelocation by ip address fails, error happens",
 			ip:       "160.103.7.140",
 			setMockExpectation: func(ip string, g *domain.Geolocation, mock sqlmock.Sqlmock) {
+				// #nosec G201
 				mock.ExpectQuery(fmt.Sprintf(`^SELECT .+ FROM %[1]s WHERE .+$`, table)).WithArgs(
 					ip,
 				).WillReturnError(
@@ -75,6 +77,7 @@ func TestFinder(t *testing.T) {
 			scenario: "Find goelocation by ip address fails, not found",
 			ip:       "160.103.7.140",
 			setMockExpectation: func(ip string, g *domain.Geolocation, mock sqlmock.Sqlmock) {
+				// #nosec G201
 				mock.ExpectQuery(fmt.Sprintf(`^SELECT .+ FROM %[1]s WHERE .+$`, table)).WithArgs(
 					ip,
 				).WillReturnError(
@@ -94,7 +97,7 @@ func TestFinder(t *testing.T) {
 			tc.setMockExpectation(tc.ip, &g, dbMock.Sqlmock)
 
 			f := storage.NewGeolocalationDBFinder(dbMock.SqlxDB, table)
-			gf, err := f.ByIpAddress(context.TODO(), tc.ip)
+			gf, err := f.ByIPAddress(context.TODO(), tc.ip)
 
 			if tc.err != nil {
 				assert.EqualError(t, err, tc.err.Error())

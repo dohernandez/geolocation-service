@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -18,7 +17,7 @@ type Persister interface {
 
 // Finder defines the finder api for finding geolocation entities
 type Finder interface {
-	ByIpAddress(ctx context.Context, ip string) (*Geolocation, error)
+	ByIPAddress(ctx context.Context, ip string) (*Geolocation, error)
 }
 
 // Geolocation represent the geolocation entity

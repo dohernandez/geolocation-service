@@ -2,8 +2,9 @@ package storage
 
 import (
 	"context"
-
 	"database/sql"
+
+	"fmt"
 
 	"github.com/dohernandez/geolocation-service/internal/domain"
 	"github.com/dohernandez/geolocation-service/pkg/log"
@@ -24,11 +25,12 @@ func NewGeolocalationDBFinder(db *sqlx.DB, table string) domain.Finder {
 	}
 }
 
-// ByIpAddress finds geolocations that contains the given ip
-func (p *geolocalationDBFinder) ByIpAddress(ctx context.Context, ip string) (*domain.Geolocation, error) {
+// ByIPAddress finds geolocations that contains the given ip
+func (p *geolocalationDBFinder) ByIPAddress(ctx context.Context, ip string) (*domain.Geolocation, error) {
 	logger := log.FromContext(ctx)
 
-	query := "SELECT * FROM " + p.table + " WHERE ip_address = $1"
+	query := "SELECT * FROM %[1]s WHERE ip_address = $1"
+	query = fmt.Sprintf(query, p.table)
 
 	if logger != nil {
 		logger.
