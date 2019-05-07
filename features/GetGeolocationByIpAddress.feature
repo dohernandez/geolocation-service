@@ -37,3 +37,13 @@ Feature: GetGeolocationByIpAddress
     When I request REST endpoint with method "GET" and path "/geolocation/160.103.7.145"
 
     Then I should have a not found response
+
+  Scenario: Geolocation details should not be displayed, ip address is not valid
+    When I request REST endpoint with method "GET" and path "/geolocation/160.103"
+
+    Then I should have a bad request response
+
+  Scenario: Geolocation details should not be displayed, ip address is empty
+    When I request REST endpoint with method "GET" and path "/geolocation/"
+
+    Then I should have a response with following code "404"

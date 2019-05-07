@@ -9,6 +9,8 @@ import (
 	"github.com/dohernandez/geolocation-service/pkg/must"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -24,6 +26,16 @@ func NewGetIPAddressHandler(c interface {
 		ipAddress := chi.URLParam(r, "ip_address")
 		if ipAddress == "" {
 			must.NotFail(render.Render(w, r, rest.ErrBadRequest(errors.New("Ip address missing"))))
+
+			return
+		}
+
+		err := validation.Validate(ipAddress,
+			validation.Required, // not empty
+			is.IP,               // is a valid IP
+		)
+		if err != nil {
+			must.NotFail(render.Render(w, r, rest.ErrBadRequest(errors.New("not valid Ip address"))))
 
 			return
 		}
