@@ -2,7 +2,9 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"sync"
 
 	"github.com/dohernandez/geolocation-service/pkg/log"
 	"github.com/gocarina/gocsv"
@@ -29,7 +31,8 @@ func NewImportGeolocationFromCSVFileToDBUseCase(persister Persister) ImportGeolo
 	}
 }
 
-// Do executes the usecase logic.
+// Do executes the usecase logic. To do so, the function start 2 goroutines in background to process the data
+// First step, validate the data and the second persist it.
 //
 // Returns error if parser csv file fails otherwise:
 // 		processed - hold the amount of Geolocation processed
@@ -44,41 +47,111 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 		return processed, accepted, discarded, err
 	}
 
-	for _, g := range gs {
-		processed++
+	vch := make(chan Geolocation)
+	ech := make(chan error)
+	sch := make(chan Geolocation)
 
-		if err := g.Validate(); err != nil {
-			if logger != nil {
-				logger.
-					WithError(err).
-					WithField("geolocation", g).
-					Debugf("Error validation")
+	var wg sync.WaitGroup
+	// this along with wg.Wait() are why the error handling works and doesn't deadlock.
+	finished := make(chan bool, 1)
+
+	// Routine to validate geolocation
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for _, g := range gs {
+			processed++
+			fmt.Println(processed)
+
+			g := g // Pinning ranged variable, more info: https://github.com/kyoh86/scopelint
+
+			if err := g.Validate(); err != nil {
+				if logger != nil {
+					logger.
+						WithError(err).
+						WithField("geolocation", g).
+						Debugf("Error validation")
+				}
+				// in case of error notify that this geolocation is discarded
+				ech <- err
+
+				continue
 			}
-
-			discarded++
-
-			continue
+			// send the valid geolocation to the next step
+			vch <- g
 		}
 
-		g.ID = uuid.New()
+		// Close channel to notify upstream steps, that this one has finished
+		close(vch)
+	}()
 
-		// Using a reference for the variable on range scope `g` (scopelint)
-		pg := g
-		if err := uc.persister.Persist(ctx, &pg); err != nil {
-			if logger != nil {
-				logger.
-					WithError(err).
-					WithField("geolocation", g).
-					Debugf("Error persist")
+	// Routine to persist geolocation
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		var wgp sync.WaitGroup
+
+		for {
+			g, ok := <-vch
+			// Once the previous step close the channel, there is no more geolocation objects to process
+			if !ok {
+				break
 			}
 
-			discarded++
+			wgp.Add(1)
+			go func() {
+				defer wgp.Done()
 
-			continue
+				g.ID = uuid.New()
+
+				if err := uc.persister.Persist(ctx, &g); err != nil {
+					if logger != nil {
+						logger.
+							WithError(err).
+							WithField("geolocation", g).
+							Debugf("Error persist")
+					}
+					// in case of error notify that this geolocation is discarded
+					ech <- err
+
+					return
+				}
+
+				// send the valid geolocation to the next step
+				sch <- g
+			}()
 		}
 
-		accepted++
+		wgp.Wait()
+	}()
+
+	// Wait for all processes to return and then close the result chan.
+	go func() {
+		wg.Wait()
+
+		close(finished)
+	}()
+
+	var fin bool
+	for {
+		select {
+		case <-finished:
+			fin = true
+		case <-ech:
+			discarded++
+		case <-sch:
+			accepted++
+		}
+
+		if fin {
+			break
+		}
 	}
+
+	close(ech)
+	close(sch)
 
 	return processed, accepted, discarded, nil
 }

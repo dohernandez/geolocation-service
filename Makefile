@@ -176,7 +176,11 @@ servid-log:
 ## Arguments:
 ##   FILE     Require file to run. Import data from the given file. Only support csv format.
 cmdimport:
-	@echo ">> starting API service in port ${GEOLOCATION_SERVICE_HOST_PORT}"
+	@echo ">> starting service in port ${GEOLOCATION_SERVICE_HOST_PORT}"
+	@mkdir -p resources/tmp
+	@cp ${FILE} resources/tmp/data.csv
+	@docker-compose run $(DOCKER_SERVICE_PORTS) --rm servid bin/${CLI_IMPORT_NAME} -f resources/tmp/data.csv
+	@rm -rf resources/tmp
 
 .PHONY: init build run run-compile-daemon lint fix-lint deps test test-unit test-integration docker create-migration migrate migrate-cli servid-start servid-stop servid-log help
 
