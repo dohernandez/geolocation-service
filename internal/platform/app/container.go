@@ -14,6 +14,7 @@ type Container struct {
 	db  *sqlx.DB
 
 	geolocationPersister domain.Persister
+	geolocationFinder    domain.Finder
 }
 
 func newContainer(cfg Config, upstream *app.Container) *Container {
@@ -50,4 +51,14 @@ func (c *Container) WithGeolocationPersister(geolocationPersister domain.Persist
 // GeolocationPersister returns service-level domain.Persister instance
 func (c *Container) GeolocationPersister() domain.Persister {
 	return c.geolocationPersister
+}
+
+// WithGeolocationFinder sets domain.Finder instance
+func (c *Container) WithGeolocationFinder(geolocationFinder domain.Finder) {
+	c.geolocationFinder = geolocationFinder
+}
+
+// GeolocationFinder returns service-level domain.Finder instance
+func (c *Container) GeolocationFinder() domain.Finder {
+	return c.geolocationFinder
 }

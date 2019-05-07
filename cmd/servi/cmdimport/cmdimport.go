@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
 	"path/filepath"
 
 	"github.com/dohernandez/geolocation-service/internal/domain"

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -14,16 +15,22 @@ type Persister interface {
 	Persist(ctx context.Context, g *Geolocation) error
 }
 
+// Finder defines the finder api for finding geolocation entities
+type Finder interface {
+	ByIPAddress(ctx context.Context, ip string) (*Geolocation, error)
+}
+
 // Geolocation represent the geolocation entity
 type Geolocation struct {
-	ID           uuid.UUID `csv:"-" db:"id"`
-	IPAddress    string    `csv:"ip_address" db:"ip_address"`
-	CountryCode  string    `csv:"country_code" db:"country_code"`
-	Country      string    `csv:"country" db:"country"`
-	City         string    `csv:"city" db:"city"`
-	Latitude     string    `csv:"latitude" db:"latitude"`
-	Longitude    string    `csv:"longitude" db:"longitude"`
-	MysteryValue int64     `csv:"mystery_value" db:"mystery_value"`
+	ID           uuid.UUID `csv:"-" db:"id" json:"id"`
+	IPAddress    string    `csv:"ip_address" db:"ip_address" json:"ip_address"`
+	CountryCode  string    `csv:"country_code" db:"country_code" json:"country_code"`
+	Country      string    `csv:"country" db:"country" json:"country"`
+	City         string    `csv:"city" db:"city" json:"city"`
+	Latitude     string    `csv:"latitude" db:"latitude" json:"latitude"`
+	Longitude    string    `csv:"longitude" db:"longitude" json:"longitude"`
+	MysteryValue int64     `csv:"mystery_value" db:"mystery_value" json:"mystery_value"`
+	CreatedAt    time.Time `csv:"-" db:"created_at" json:"-"`
 }
 
 // validateCountry validates if a string is a valid country or not.

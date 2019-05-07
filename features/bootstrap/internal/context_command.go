@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"strings"
-
 	"path"
+	"strings"
 
 	"github.com/DATA-DOG/godog"
 )

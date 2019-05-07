@@ -10,12 +10,9 @@ mediaType:
   - application/json
 
 types:
-  ErrResponse:
+  ErrorResponse:
       type: object
       properties:
-        code:
-          type: integer
-          format: int64
         error:
           type: string
         status:
@@ -36,20 +33,103 @@ types:
         go_version:
           type: string
 
+  Geolocation:
+      type: object
+      properties:
+        id:
+          type: string
+        ip_address:
+          type: string
+        country_code:
+          type: string
+        country:
+          type: string
+        city:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        mystery_value:
+          type: string
+
 /version:
   get:
-      description: Display API server version
-      responses:
-        '200':
-          description: OK
-          body:
-            application/json:
-              type: VersionResponse
-              example:
-                version: v1.0
-                revision: 52da34e2afa432cebca21adb755a827cb990c1ce
-                branch: master
-                build_user: dohernandez
-                build_date: 2019-02-25T17:33:16UTC
-                go_version: go1.11.4
+    description: Display API server version
+    responses:
+      '200':
+        description: OK
+        body:
+          application/json:
+            type: VersionResponse
+            example:
+              version: v1.0
+              revision: 52da34e2afa432cebca21adb755a827cb990c1ce
+              branch: master
+              build_user: dohernandez
+              build_date: 2019-02-25T17:33:16UTC
+              go_version: go1.11.4
+
+'/geolocation/{ip_address}':
+  uriParameters:
+    ip_address:
+      description: The ip address.
+  get:
+    description: Display geolocation details for the ip address
+    responses:
+      '200':
+        description: OK
+        body:
+          application/json:
+            type: Geolocation
+            example:
+              id: 5c6a6ae0-d005-4123-bfb0-4758594ae3b8
+              ip_address: 160.103.7.140
+              country_code: CZ
+              country: Nicaragua
+              city: New Neva
+              latitude: "-68.31023296602508"
+              longitude: "-37.62435199624531"
+              mystery_value: 7301823115
+      '400':
+        description: Bad Request
+        body:
+          application/json:
+            type: ErrorResponse
+            example: |
+              {
+                "status": "Bad Request",
+                "error": "Ip address missing"
+              }
+      '412':
+        description: Precondition Failed
+        body:
+          application/json:
+            type: ErrorResponse
+            example: |
+              {
+                "status": "Precondition Failed",
+                "error": "ip_address: is not a valid ip."
+              }
+      '404':
+        description: Not Found
+        body:
+          application/json:
+            type: ErrorResponse
+            example: |
+              {
+                "status": "Not Found",
+                "error": "not found"
+              }
+      '500':
+        description: Internal Server Error
+        body:
+          application/json:
+            type: ErrorResponse
+            example: |
+              {
+                "status": "Internal Server Error",
+                "error": "error ip address"
+              }
+
 

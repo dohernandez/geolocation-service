@@ -135,6 +135,7 @@ func (c *RestContext) iShouldHaveResponseWithTheFollowingJSONBody(expected *gher
 	}
 
 	var receivedData, expectedData interface{}
+
 	err = json.Unmarshal([]byte(expected.Content), &expectedData)
 	if err != nil {
 		return errors.Wrap(err, "failed to unmarshal expected data")
