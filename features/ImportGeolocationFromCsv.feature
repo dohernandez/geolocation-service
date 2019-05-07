@@ -1,4 +1,4 @@
-Feature:
+Feature: ImportGeolocationFromCsv
   As a user
   I want to import geolocation from csv file
   so that I save geolocation details

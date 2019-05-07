@@ -3,6 +3,8 @@ package internal
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/dohernandez/geolocation-service/pkg/test/feature"
@@ -50,6 +52,15 @@ func (c *DBContext) theFollowingGeolocationsShouldBeStoredInTheTable(table strin
 }
 
 func (c *DBContext) thatTheFollowingGeolocationsAreStoredInTheTable(table string, data *gherkin.DataTable) error {
+	err := c.RunStoreData(table, data, nil)
+	if err != nil {
+		return err
+	}
+
+	time.Sleep(1 * time.Second)
+
+	return nil
+
 	return godog.ErrPending
 }
 

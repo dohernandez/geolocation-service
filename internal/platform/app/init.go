@@ -28,5 +28,8 @@ func NewAppContainer(cfg Config) (*Container, error) {
 	geolocationPersister := storage.NewGeolocalationDBPersister(db, geolocationTable)
 	c.WithGeolocationPersister(geolocationPersister)
 
+	geolocationFinder := storage.NewGeolocalationDBFinder(db, geolocationTable)
+	c.WithGeolocationFinder(geolocationFinder)
+
 	return c, nil
 }

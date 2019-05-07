@@ -31,7 +31,10 @@ func (p *geolocalationDBFinder) ByIpAddress(ctx context.Context, ip string) (*do
 	query := "SELECT * FROM " + p.table + " WHERE ip_address = $1"
 
 	if logger != nil {
-		logger.Debugf("exec in transaction sql %s, values %+v", query, ip)
+		logger.
+			WithField("sql", query).
+			WithField("ip", ip).
+			Debugf("exec in transaction")
 	}
 
 	var g domain.Geolocation
