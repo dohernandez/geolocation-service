@@ -31,7 +31,8 @@ func NewImportGeolocationFromCSVFileToDBUseCase(persister Persister) ImportGeolo
 	}
 }
 
-// Do executes the usecase logic.
+// Do executes the usecase logic. To do so, the function start 2 goroutines in background to process the data
+// First step, validate the data and the second persist it.
 //
 // Returns error if parser csv file fails otherwise:
 // 		processed - hold the amount of Geolocation processed
@@ -54,6 +55,7 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 	// this along with wg.Wait() are why the error handling works and doesn't deadlock.
 	finished := make(chan bool, 1)
 
+	// Routine to validate geolocation
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -71,43 +73,36 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 						WithField("geolocation", g).
 						Debugf("Error validation")
 				}
-
+				// in case of error notify that this geolocation is discarded
 				ech <- err
 
 				continue
 			}
-
+			// send the valid geolocation to the next step
 			vch <- g
 		}
 
+		// Close channel to notify upstream steps, that this one has finished
 		close(vch)
 	}()
 
-	concurrency := 20
-
+	// Routine to persist geolocation
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
 		var wgp sync.WaitGroup
-		cncr := concurrency
 
 		for {
-
 			g, ok := <-vch
+			// Once the previous step close the channel, there is no more geolocation objects to process
 			if !ok {
 				break
 			}
 
 			wgp.Add(1)
-			cncr--
-
 			go func() {
-				defer func() {
-					cncr++
-
-					wgp.Done()
-				}()
+				defer wgp.Done()
 
 				g.ID = uuid.New()
 
@@ -118,20 +113,15 @@ func (uc *importGeolocationFromCSVFileToDBUseCase) Do(ctx context.Context, f io.
 							WithField("geolocation", g).
 							Debugf("Error persist")
 					}
-
+					// in case of error notify that this geolocation is discarded
 					ech <- err
 
 					return
 				}
 
+				// send the valid geolocation to the next step
 				sch <- g
 			}()
-
-			for {
-				if cncr != 0 {
-					break
-				}
-			}
 		}
 
 		wgp.Wait()
