@@ -10,12 +10,9 @@ mediaType:
   - application/json
 
 types:
-  ErrResponse:
+  ErrorResponse:
       type: object
       properties:
-        code:
-          type: integer
-          format: int64
         error:
           type: string
         status:
@@ -73,11 +70,10 @@ types:
               build_date: 2019-02-25T17:33:16UTC
               go_version: go1.11.4
 
-/geolocation
-  '/{ip_address}':
-      uriParameters:
-        ip_address:
-          description: The ip address.
+'/geolocation/{ip_address}':
+  uriParameters:
+    ip_address:
+      description: The ip address.
   get:
     description: Display geolocation details for the ip address
     responses:
@@ -85,15 +81,15 @@ types:
         description: OK
         body:
           application/json:
-            type: VersionResponse
+            type: Geolocation
             example:
               id: 5c6a6ae0-d005-4123-bfb0-4758594ae3b8
               ip_address: 160.103.7.140
               country_code: CZ
               country: Nicaragua
               city: New Neva
-              latitude: -68.31023296602508
-              longitude: -37.62435199624531
+              latitude: "-68.31023296602508"
+              longitude: "-37.62435199624531"
               mystery_value: 7301823115
       '400':
         description: Bad Request
